@@ -1,0 +1,125 @@
+:root {
+  --color-bg1: #96b4a8;
+  --color-bg2: #6ccca4;
+  --color-borders: #27ad75;
+  --blending: soft-light;
+  --body-font: 'Courier New', monospace;
+  --body-color: #000000;
+  --padding: 10px;
+}
+
+* {
+    font-family: var(--body-font);
+    color: var(--body-color);
+    outline:none;
+    list-style:none;
+    text-decoration:none;
+    box-sizing:border-box;
+    background: transparent;
+    border:none;
+}
+
+.navbar {
+	display: flex;
+	position: sticky;
+  align-items: center;
+  height: 62px;
+	width: 100%;
+	top: 0;
+	left: 0;
+	z-index: 2;
+	font-weight: 600;
+	border-bottom: 1px solid #2c2d2a40;
+
+  @media screen {
+    
+  }
+  
+	&.menu {
+    display: flex;
+		align-items: center;
+		
+    @media screen {
+      width: calc(100% + 20px);
+      margin-left: -10px;
+    }
+
+		a:not(:first-child) {
+			margin-left: 20px;
+
+      &:last-child {
+        margin-right: auto;
+      }
+		}
+	}
+
+	&.icons {
+    .item {
+      svg {
+        align-self: center;
+      }
+
+      &:not(:last-child) {
+        margin-right: 10px;
+      }
+
+      &:first-child {
+        margin-left: auto;
+      }
+
+      .popup {     
+        position: absolute;
+        right: var(--padding);
+        align-items: right;
+        display: flex;
+        flex-direction: column;
+        border: 2px solid var(--color-borders);
+        border-radius: 5px;
+        padding: var(--padding);
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility 0s, opacity 0.1s linear;
+        background: var(--color-bg2);
+      }
+      
+      &:hover .popup {
+        visibility: visible;
+        opacity: 1;
+      }
+    }
+	}
+}
+
+.gradient-bg {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  scroll-behavior: smooth;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: linear-gradient(40deg, var(--color-bg1), var(--color-bg2));
+  position: relative;
+  overflow: hidden;
+  top: 0;
+  left: 0;
+  padding: 0 20px;
+  
+  .svgBlur {
+    display: none;
+  }
+  
+  .noiseBg {
+    position: absolute; 
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    mix-blend-mode: var(--blending);
+    opacity: 0.3;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 0;
+  }
+}
