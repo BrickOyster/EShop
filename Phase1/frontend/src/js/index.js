@@ -1,4 +1,4 @@
-(function( $ ){
+$(document).ready(function(){
 	   
   // Easing equation based on
   // EaseInOutExpo by Robert Penner (c) 2001
@@ -21,9 +21,6 @@
       this.disabled = !this.disabled;
     });
   };
-  
-  // Toggle attribute value
-  // Anders Grimsrud, 2013
   
   $.fn.toggleAttr = function(a, v1, v2) {
     return this.each(function() {
@@ -71,9 +68,8 @@
       // Change form action
       // login.php -> register.php
       $('form').toggleAttr('action','login.php','register.php')
-        
         return false;
     }
   );
   
-})(jQuery);
+});
