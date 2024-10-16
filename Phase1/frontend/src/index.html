@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Add css -->
     <link rel="stylesheet" href="index.css">
+    <!-- Add js -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/index.js" type="text/javascript"></script>
     <!-- Page Title -->
     <title>E-Shop</title>
   </head>
@@ -36,15 +39,48 @@
             <path d="M5 21C5 17.134 8.13401 14 12 14C15.866 14 19 17.134 19 21M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
           </svg>
           <div class="popup">
-            <a href="#Login">
-              Login
-            </a>
-            <a href="#Register">
-              Register
-            </a>
-            <a href="#Cart">
-              My Cart
-            </a>
+            <div class="authbox">
+              <h2>Login</h2>
+              
+              <form action="">
+                
+                <!-- Login -->
+                <div class="login-form">
+                  <label for="username">Username</label>
+                  <input type="text" id="username" placeholder="Username">
+                  
+                  <label for="password">Password</label>
+                  <input type="password" id="password" placeholder="Password">
+                </div>
+                
+                <!-- Register -->
+                <div class="register-form">
+                  <label for="first-name">First Name</label>
+                  <input disabled type="text" id="first-name" placeholder="First Name">
+                  
+                  <label for="last-name">Last Name</label>
+                  <input disabled type="text" id="last-name" placeholder="Last Name">
+                  
+                  <label for="email">E-mail Adress</label>
+                  <input disabled type="text" id="email" placeholder="E-mail Address">
+                  
+                  <label for="confirm-email">Confirm E-mail Address</label>
+                  <input disabled type="text" id="confirm-email" placeholder="Confirm E-mail Address">
+                  
+                  <div class="captcha">
+                    <label for="captcha">What is <strong>10 + 3</strong>?</label>
+                    <input disabled type="text" id="captcha" placeholder="Your answer">
+                  </div>
+                </div>
+                
+                <!-- Submit -->
+                <input type="submit" id="submit" value="Login">
+                
+                <!-- Help -->
+                <a href="register.htm" class="register">Register!</a>
+                <a href="#forgotpassword" class="forgot-password" title="Forgot password?">Forgot?</a>
+              </form>
+            </div>
           </div>
         </div>
       </div>
