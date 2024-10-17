@@ -71,5 +71,24 @@ $(document).ready(function(){
         return false;
     }
   );
+
+  var popupprevid = '--';
+  $('.navicon').click(
+    function() {
+      console.log(this.id+popupprevid)
+      if(popupprevid !== this.id){
+        $('.popup[display="block"]').slideToggle({
+          easing: 'eioe',
+          duration: 250
+        }).toggleAttr('display','block','none');
+      }
+      
+      $('#popon'+ this.id).slideToggle({
+        easing: 'eioe',
+        duration: 250
+      }).toggleAttr('display','block','none');
+      popupprevid = this.id;
+    }
+  );
   
 });

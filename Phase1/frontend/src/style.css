@@ -6,7 +6,7 @@
   --blending: soft-light;
   --body-font: 'Courier New', monospace;
   --body-color: #000000;
-  --padding: 10px;
+  --weight-borders: 2px;
 }
 
 * {
@@ -30,7 +30,7 @@
 	left: 0;
 	z-index: 2;
 	font-weight: 600;
-	border-bottom: 1px solid #2c2d2a40;
+	border-bottom: var(--weight-borders) solid #1616167c;
 
   @media screen {
     
@@ -52,46 +52,68 @@
         margin-right: auto;
       }
 		}
+
+    a>svg {
+      bottom: 0;
+      margin-bottom: -6px;
+    }
 	}
 
 	&.icons {
-    .item {
+    >input {
+      padding: 10px 5px;
+      font-size: 16px;
+      font-weight: 600;
+      border: var(--weight-borders) solid var(--color-borders);
+      border-radius: 5px;
+    }
+
+    .navicon {
       svg {
+        width: 40px;
+        height: 40px;
         align-self: center;
       }
-
+      
       &:not(:last-child) {
         margin-right: 10px;
       }
-
+      
       &:first-child {
         margin-left: auto;
       }
 
-      .popup {     
+      ~ .popup {     
         position: absolute;
-        right: var(--padding);
+        right: 0;
+        top: 110%;
         align-items: right;
-        display: flex;
-        flex-direction: column;
-        border: 2px solid var(--color-borders);
+        display: none;
+        border: var(--weight-borders) solid var(--color-borders);
         border-radius: 5px;
         padding: 0;
-        visibility: hidden;
-        opacity: 0;
-        transition: visibility 0s, opacity 0.2s linear;
         background: var(--color-bg2);
       }
-      
-      &:hover .popup {
-        visibility: visible;
-        opacity: 1;
+    
+      >.floatingnumber {
+        position: absolute;
+        font-size:10px;
+        text-align: center;
+        align-items: center;
+        background-color:#ff0000;
+        border-radius: 10px;
+        padding: 4px 2px;
+        width:auto;
+        min-width: 20px;
+        height:20px;
+        color:#fff;
       }
     }
 	}
 }
 
 .authbox {
+  display: inherit;
   margin: 0;
   padding: 25px 50px;
   width: 350px;
@@ -119,7 +141,7 @@
     padding: 0 5px;
     width: 225px;
     height: 30px;
-    border: 1px solid var(--color-borders);
+    border: var(--weight-borders) solid var(--color-borders);
   }
   input:focus {
     z-index: 15;
