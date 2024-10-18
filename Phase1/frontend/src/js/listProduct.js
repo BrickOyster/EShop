@@ -5,30 +5,36 @@ let basket = JSON.parse(localStorage.getItem("data")) || [];
 console.log(basket);
 
 let generateShop = () => {
+  let searchRes = new URLSearchParams(window.location.search).get('search');
+  document.getElementById('search-box').value = searchRes;
   if(shop !== null) {
     return (shop.innerHTML = shopItemsData
         .map((x) => {
             let {id, name, price, desc, img} = x;
             let search = basket.find((x) => x.id == id) || [];
-            return `
-            <div id=product-id-${id} class="item-card">
+            if(name.search(searchRes) !== -1 || desc.search(searchRes) !== -1) {
+              return `
+              <div id=product-id-${id} class="item-card">
               <img src=${img} alt="" onerror="this.src='img/error.png';"/>
               <div class="details">
-                <h3>${name}</h3>
-                <p>${desc}</p>
-                <div class="price-quantity">
-                  <h2>$ ${price} </h2>
-                  <div class="buttons">
-                    <i onclick="decrement(${id})" class="bi bi-dash-lg">-</i>
-                    <div id=${id} class="quantity">
-                      ${search.item === undefined ? 0 : search.item}
-                    </div>
-                    <i onclick="increment(${id})" class="bi bi-plus-lg">+</i>
-                  </div>
-                </div>
+              <h3>${name}</h3>
+              <p>${desc}</p>
+              <div class="price-quantity">
+              <h2>$ ${price} </h2>
+              <div class="buttons">
+              <i onclick="decrement(${id})" class="bi bi-dash-lg">-</i>
+              <div id=${id} class="quantity">
+              ${search.item === undefined ? 0 : search.item}
               </div>
-            </div>
-            `;
+              <i onclick="increment(${id})" class="bi bi-plus-lg">+</i>
+              </div>
+              </div>
+              </div>
+              </div>
+              `;
+            } else {
+              return
+            }
         }).join(""));
   }
 };

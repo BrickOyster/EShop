@@ -34,7 +34,6 @@ $(document).ready(function(){
   
   $('.register').click(
     function(){
-      console.log("Register clicked");
       // Toggle register form and enable inputs
       $('.register-form').slideToggle({
         easing: 'eioe',
@@ -75,7 +74,7 @@ $(document).ready(function(){
   var popupprevid = '--';
   $('.navicon').click(
     function() {
-      console.log(this.id+popupprevid)
+      // console.log(this.id+popupprevid)
       if(popupprevid !== this.id){
         $('.popup[display="block"]').slideToggle({
           easing: 'eioe',
@@ -91,4 +90,15 @@ $(document).ready(function(){
     }
   );
   
+  $('#searchProduct').click(
+    function() {
+      window.location.href= 'http://127.0.0.1:5500/Phase1/frontend/src/products.html?search=' + document.getElementById("search-box").value
+    } 
+  );
+
+  $('#search-box').keypress(
+    function(event) {
+      if(event.which === 13) window.location.href= 'http://127.0.0.1:5500/Phase1/frontend/src/products.html?search=' + document.getElementById("search-box").value;
+    }
+  );
 });
