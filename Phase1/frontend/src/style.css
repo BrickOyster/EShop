@@ -197,6 +197,24 @@ body {
         min-width: 20px;
         padding: 5px;
       }
+
+      .bi-edit-lg {
+        color: #ffffff;
+        background-color: #940000;
+        border-radius: 5px 0 0 5px;
+        min-width: 20px;
+        padding: 5px;
+        justify-self: center;
+      }
+      
+      .bi-bin-lg {
+        color: #ffffff;
+        background-color: #008a00;
+        border-radius: 0 5px 5px 0;
+        min-width: 20px;
+        padding: 5px;
+        justify-self: center;
+      }
     }
   }
 }
@@ -224,7 +242,7 @@ body {
   grid-template-columns: repeat(1, 300px);
   justify-content: center;
   gap: 15px;
-  height: 400px;
+  max-height: 400px;
   overflow-y: auto;
   scrollbar-width: none;
   padding: 10px;

@@ -5,40 +5,69 @@ let basket = JSON.parse(localStorage.getItem("data")) || [];
 console.log(basket);
 
 let generateShop = () => {
-  let searchRes = new URLSearchParams(window.location.search).get('search');
+  let searchRes = new URLSearchParams(window.location.search).get('search') || "";
+  let editRes = new URLSearchParams(window.location.search).get('editable') || "";
   document.getElementById('search-box').value = searchRes;
   if(shop !== null) {
-    return (shop.innerHTML = shopItemsData
+    if (editRes === 'true') {
+      return (shop.innerHTML = shopItemsData
         .map((x) => {
-            let {id, name, price, desc, img} = x;
-            let search = basket.find((x) => x.id == id) || [];
-            if(name.search(searchRes) !== -1 || desc.search(searchRes) !== -1) {
-              return `
-              <div id=product-id-${id} class="item-card">
-              <img src=${img} alt="" onerror="this.src='img/error.png';"/>
-              <div class="details">
+          let {id, name, price, desc, img} = x;
+          let search = basket.find((x) => x.id == id) || [];
+          if(search[1] !== $ && name.search(searchRes) === -1 && desc.search(searchRes) === -1) return;
+          return `
+          <div id=product-id-${id} class="item-card">
+            <img src=${img} alt="" onerror="this.src='img/error.png';"/>
+            <div class="details">
               <h3>${name}</h3>
               <p>${desc}</p>
               <div class="price-quantity">
-              <h2>$ ${price} </h2>
-              <div class="buttons">
-              <i onclick="decrement(${id})" class="bi bi-dash-lg">-</i>
-              <div id=${id} class="quantity">
-              ${search.item === undefined ? 0 : search.item}
+                <h2>$ ${price} </h2>
+                <div class="buttons">
+                  <i onclick="decrement(${id})" class="bi bi-edit-lg">
+                    <svg width="16px" height="16px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M10 12L14 16M14 12L10 16M4 6H20M16 6L15.7294 5.18807C15.4671 4.40125 15.3359 4.00784 15.0927 3.71698C14.8779 3.46013 14.6021 3.26132 14.2905 3.13878C13.9376 3 13.523 3 12.6936 3H11.3064C10.477 3 10.0624 3 9.70951 3.13878C9.39792 3.26132 9.12208 3.46013 8.90729 3.71698C8.66405 4.00784 8.53292 4.40125 8.27064 5.18807L8 6M18 6V16.2C18 17.8802 18 18.7202 17.673 19.362C17.3854 19.9265 16.9265 20.3854 16.362 20.673C15.7202 21 14.8802 21 13.2 21H10.8C9.11984 21 8.27976 21 7.63803 20.673C7.07354 20.3854 6.6146 19.9265 6.32698 19.362C6 18.7202 6 17.8802 6 16.2V6" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+                  </i>
+                  <i onclick="increment(${id})" class="bi bi-bin-lg">
+                    <svg width="16px" height="16px" viewBox="0 0 24.00 24.00" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 20.0002H21M3 20.0002H4.67454C5.16372 20.0002 5.40832 20.0002 5.63849 19.945C5.84256 19.896 6.03765 19.8152 6.2166 19.7055C6.41843 19.5818 6.59138 19.4089 6.93729 19.063L19.5 6.50023C20.3285 5.6718 20.3285 4.32865 19.5 3.50023C18.6716 2.6718 17.3285 2.6718 16.5 3.50023L3.93726 16.063C3.59136 16.4089 3.4184 16.5818 3.29472 16.7837C3.18506 16.9626 3.10425 17.1577 3.05526 17.3618C3 17.5919 3 17.8365 3 18.3257V20.0002Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                  </i>
+                </div>
               </div>
-              <i onclick="increment(${id})" class="bi bi-plus-lg">+</i>
-              </div>
-              </div>
-              </div>
-              </div>
-              `;
-            } else {
-              return
-            }
+            </div>
+          </div>
+          `;
         }).join(""));
+    } else {
+      return (shop.innerHTML = shopItemsData
+        .map((x) => {
+          let {id, name, price, desc, img} = x;
+          let search = basket.find((x) => x.id == id) || [];
+          if(search[1] !== $ && name.search(searchRes) === -1 && desc.search(searchRes) === -1) return;
+          return `
+          <div id=product-id-${id} class="item-card">
+            <img src=${img} alt="" onerror="this.src='img/error.png';"/>
+            <div class="details">
+              <h3>${name}</h3>
+              <p>${desc}</p>
+              <div class="price-quantity">
+                <h2>$ ${price} </h2>
+                <div class="buttons">
+                  <i onclick="decrement(${id})" class="bi bi-dash-lg">-</i>
+                  <div id=${id} class="quantity">
+                    ${search.item === undefined ? 0 : search.item}
+                  </div>
+                  <i onclick="increment(${id})" class="bi bi-plus-lg">+</i>
+                </div>
+              </div>
+            </div>
+          </div>
+          `;
+        }).join(""));
+    }
   }
-};
-generateShop();
+}; generateShop();
+// url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAA1BMVEXuAY2OFA6sAAAASElEQVR4nO3BgQAAAADDoPlTX+AIVQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwDcaiAAFXD1ujAAAAAElFTkSuQmCC')
 
 let increment = (id) => {
     let selectedItem = id;
@@ -83,8 +112,7 @@ let update = (id) => {
 let calculation = () => {
     let cartIcon = document.getElementById("cartContents");
     cartIcon.innerHTML = basket.map((x) => x.item).reduce((x, y) => x + y, 0);
-};
-calculation();
+}; calculation();
 
 let TotalAmount = () => {
   if (basket.length !== 0) {
@@ -104,8 +132,7 @@ let TotalAmount = () => {
       `);
     }
   } else return;
-};
-TotalAmount();
+}; TotalAmount();
 
 let displayCart = () => {
   TotalAmount();
@@ -149,8 +176,7 @@ let displayCart = () => {
       `;
     }
   }
-};
-displayCart();
+}; displayCart();
 
 let clearCart = () => {
   basket = [];
