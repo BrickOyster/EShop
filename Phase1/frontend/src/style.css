@@ -139,6 +139,10 @@ body {
     border-radius: 5px;
     display: flex;
     
+    p {
+      margin-bottom: auto;
+    }
+    
     img {
       float: left;
       height: 100%;
@@ -147,6 +151,8 @@ body {
 
     .details {
       float: right;
+      text-align: right;
+      flex-grow: 1;
       display: flex;
       flex-direction: column;
       height: 100%;
@@ -177,43 +183,46 @@ body {
 
         >.quantity {
           border: var(--weight-borders) solid var(--color-borders);
-          min-width: 30px;
-          padding: 3px;
+          min-width: 40px;
+          min-height: 100%;
+          align-content: center;
         }
-      }
-      
-      .bi-dash-lg {
-        color: #ffffff;
-        background-color: #940000;
-        border-radius: 5px 0 0 5px;
-        min-width: 20px;
-        padding: 5px;
-      }
-      
-      .bi-plus-lg {
-        color: #ffffff;
-        background-color: #008a00;
-        border-radius: 0 5px 5px 0;
-        min-width: 20px;
-        padding: 5px;
-      }
-
-      .bi-edit-lg {
-        color: #ffffff;
-        background-color: #940000;
-        border-radius: 5px 0 0 5px;
-        min-width: 20px;
-        padding: 5px;
-        justify-self: center;
-      }
-      
-      .bi-bin-lg {
-        color: #ffffff;
-        background-color: #008a00;
-        border-radius: 0 5px 5px 0;
-        min-width: 20px;
-        padding: 5px;
-        justify-self: center;
+        
+        .bi-dash-lg {
+          color: #ffffff;
+          background-color: #940000;
+          width: 30px;
+          min-height: 100%;
+          border-radius: 5px 0 0 5px;
+          align-content: center;
+        }
+          
+        .bi-plus-lg {
+          color: #ffffff;
+          background-color: #008a00;
+          width: 30px;
+          min-height: 100%;
+          border-radius: 0 5px 5px 0;
+          align-content: center;
+        }
+          
+        .bi-edit-lg {
+          color: #ffffff;
+          background-color: #940000;
+          width: 30px;
+          min-height: 100%;
+          border-radius: 5px 0 0 5px;
+          align-content: center;
+        }
+          
+        .bi-bin-lg {
+          color: #ffffff;
+          background-color: #008a00;
+          width: 30px;
+          min-height: 100%;
+          border-radius: 0 5px 5px 0;
+          align-content: center;
+        }
       }
     }
   }
@@ -299,7 +308,6 @@ body {
         display: flex;
         font-size: 16px;
         font-weight: 600;
-        text-align: center;
         margin-left: auto;
         margin-right: 10px;
         touch-action: none;
@@ -315,6 +323,7 @@ body {
         
         .bi-dash-lg {
           color: #ffffff;
+          text-align: right;
           background-color: #940000;
           border-radius: 5px 0 0 5px;
           min-width: 20px;
@@ -323,6 +332,7 @@ body {
         
         .bi-plus-lg {
           color: #ffffff;
+          text-align: left;
           background-color: #008a00;
           border-radius: 0 5px 5px 0;
           min-width: 20px;

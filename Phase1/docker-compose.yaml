@@ -1,0 +1,53 @@
+services:
+  # app:
+  #   image: purrvana-app
+  #   ports:
+  #     - 1337:1337 
+
+  product_db:
+    image: postgres
+    container_name: product_db
+    restart: always
+    expose:
+      - 13370
+    ports:
+      - "13370:5432"
+    environment:
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: product_db
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: rootuser
+    volumes:
+    - .data/product_db:/var/lib/postgresql/data
+    - ./pd_init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  # order_db:
+  #   image: postgres
+  #   container_name: order_db
+  #   restart: always
+  #   expose:
+  #     - 13371
+  #   ports:
+  #     - "13371:5432"
+  #   environment:
+  #     POSTGRES_HOST: localhost
+  #     POSTGRES_PORT: 5432
+  #     POSTGRES_DB: product_db
+  #     POSTGRES_USER: root
+  #     POSTGRES_PASSWORD: rootuser
+  #   volumes:
+  #   - .data/order_db:/var/lib/postgresql/data
+  #   - ./od_init.sql:/docker-entrypoint-initdb.d/init.sql
+    
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    restart: always
+    ports:
+      - "8888:80" 
+    environment: 
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com 
+      PGADMIN_DEFAULT_PASSWORD: admin 
+    volumes:
+      - .data/pgadmin:/var/lib/pgadmin/data
