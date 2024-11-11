@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
+const axios = require('axios');
 const path = require('path');
 const port = 1337;
 
@@ -11,7 +12,6 @@ let odport = process.env.ORDERS_PORT   || 13373;
 
 let pdurl = `http://${pdhost}:${pdport}/`;
 let odurl = `http://${odhost}:${odport}/`;
-let url = 'http://localhost:1337/';
 
 const app = express();
 app.use(cors());
@@ -40,7 +40,7 @@ app.post('/upload', async (req, res) => {
     }
 });
 
-app.post('/delete', async (req, res) => {
+app.post('/remove', async (req, res) => {
     const { title } = req.body;
     let imgPath = path.join(__dirname, `img/${title}`);
     // console.log(title+'\n'+imgPath+'\n'+image);
@@ -50,6 +50,82 @@ app.post('/delete', async (req, res) => {
     } catch (e) {
         console.log(e);
         res.sendStatus(500);
+    }
+});
+
+app.get('/products', async (req, res) => {
+    try {
+        const response = await axios.get(pdurl);
+        res.status(200).json(response.data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error fetching products');
+    }
+});
+
+app.post('/products', async (req, res) => {
+    try {
+        const response = await axios.post(pdurl, req.body, {
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        res.status(200).json(response.data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error fetching products');
+    }
+});
+
+app.delete('/products', async (req, res) => {
+    try {
+        const response = await axios.post(pdurl+'delete', req.body, {
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        res.status(200).json(response.data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error fetching products');
+    }
+});
+
+app.post('/products/update', async (req, res) => {
+    try {
+        const response = await axios.post(pdurl+'update', req.body, {
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        res.json(response.data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error fetching products');
+    }
+});
+
+app.get('/orders', async (req, res) => {
+    try {
+        const response = await axios.get(odurl);
+        res.status(200).json(response.data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error fetching products');
+    }
+});
+
+app.post('/orders', async (req, res) => {
+    try {
+        const response = await axios.post(odurl, req.body, {
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        res.status(200).json(response.data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error fetching products');
     }
 });
 

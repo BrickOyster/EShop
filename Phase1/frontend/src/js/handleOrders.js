@@ -1,14 +1,3 @@
-let pdhost = 'localhost';
-let pdport = 13371;
-let odhost = 'localhost';
-let odport = 13373;
-// process.env.PRODUCTS_HOST || 
-// process.env.PRODUCTS_PORT || 
-// process.env.ORDERS_HOST   || 
-// process.env.ORDERS_PORT   || 
-let pdurl = `http://${pdhost}:${pdport}/`;
-let odurl = `http://${odhost}:${odport}/`;
-
 let shoppingCart = document.getElementById("shopping-cart");
 let label = document.getElementById("label");
 let basket = JSON.parse(localStorage.getItem("basket")) || [];
@@ -122,7 +111,7 @@ let calculation = () => {
 let getShopItems = async (retake) => {
   if(retake === 2){
     try {
-      const response = await fetch(pdurl);
+      const response = await fetch('/products');
       if(!response.ok){
         throw new Error("Could not fetch resource");
       }
@@ -131,7 +120,7 @@ let getShopItems = async (retake) => {
       globalShopProducts = data;
       globalShopProducts.push("Dummy");
       console.log(globalShopProducts);
-      const response2 = await fetch(odurl);
+      const response2 = await fetch('/orders');
       if(!response2.ok){
         throw new Error("Could not fetch resource");
       }
@@ -145,7 +134,7 @@ let getShopItems = async (retake) => {
     }
   } else if (retake) {
     try {
-      const response = await fetch(pdurl);
+      const response = await fetch('/products');
       if(!response.ok){
         throw new Error("Could not fetch resource");
       }

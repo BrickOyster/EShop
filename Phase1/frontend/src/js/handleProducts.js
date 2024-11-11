@@ -188,7 +188,7 @@ let calculation = () => {
 let getShopItems = async (retake) => {
   if (retake) {
     try {
-      const response = await fetch(pdurl);
+      const response = await fetch('/products');
       if(!response.ok){
         throw new Error("Could not fetch resource");
       }
@@ -267,7 +267,7 @@ let submitOrder = async () => {
   }, 0).toFixed(2);
 
   try {
-    let response = await fetch(odurl, {
+    let response = await fetch('/orders', {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -302,7 +302,7 @@ let editProduct = (id) => {
 
 let submitEdit = async (id) => {
   // console.log({iid: id, title: document.getElementById(`edit-title-${id}`).value, image: document.getElementById(`edit-title-${id}`).value.replace(" ", '_').toLowerCase()+".png",  description: document.getElementById(`edit-description-${id}`).value, price: document.getElementById(`edit-price-${id}`).value, quantity: 100});
-  await fetch(pdurl+"update",
+  await fetch('/products/update',
     {
       headers: {
         'Accept': 'application/json',
@@ -325,23 +325,23 @@ let cancelEdit = () => {
 }
 
 let deleteProduct = async (id) => {
-  await fetch(url+"delete",
+  await fetch('/remove', 
     {
+      method: "POST",
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      method: "POST",
       body: JSON.stringify({title: document.getElementById(`h3-${id}`).innerHTML.replace(" ", '_').toLowerCase()+".png"})
     }
   );
-  await fetch(pdurl,
+  await fetch('/products',
     {
+      method: "DELETE",
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      method: "DELETE",
       body: JSON.stringify({iid: id})
     });
   getShopItems(1);
@@ -354,7 +354,7 @@ let addProduct = async () => {
     reader.onload = async function(event) {
       const fileContent = event.target.result; // The file's content as text
       // console.log(document.getElementById(`add-title`).value.replace(" ", '_').toLowerCase()+".png"+"\n"+fileContent.split(',')[1]);
-      await fetch(url+"upload",
+      await fetch('/upload',
         {
           headers: {
             'Accept': 'application/json',
@@ -372,7 +372,7 @@ let addProduct = async () => {
   }
   
   
-  await fetch(pdurl,
+  await fetch('/products',
     {
       headers: {
         'Accept': 'application/json',

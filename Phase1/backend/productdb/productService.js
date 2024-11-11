@@ -30,8 +30,9 @@ app.post('/', async (req, res) => {
     }
 });
 
-app.delete('/', async (req, res) => {
+app.post('/delete', async (req, res) => {
     const { iid } = req.body
+    console.log(req.body)
     // console.log('DELETE FROM products USING id WHERE products.id = $1', iid);
     try {
         await pool.query('DELETE FROM products WHERE products.id = $1', [iid])
