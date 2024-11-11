@@ -20,7 +20,7 @@ app.get('/', async (req, res) => {
 });
 
 app.get('/*', async (req, res) => {
-    // console.log("img");
+    // console.log(__dirname + "  " + req.path);
     try {
         res.status(200).sendFile(path.join(__dirname, req.path));
     } catch (err) {
@@ -28,6 +28,26 @@ app.get('/*', async (req, res) => {
         res.sendStatus(500);
     }
 });
+
+// app.get('/js/*', async (req, res) => {
+//     console.log(__dirname + "  " + req.path);
+//     try {
+//         res.status(200).sendFile(path.join(__dirname+"js/", req.path));
+//     } catch (err) {
+//         console.log(err);
+//         res.sendStatus(500);
+//     }
+// });
+
+// app.get('/img/*', async (req, res) => {
+//     console.log(__dirname + "  " + req.path);
+//     try {
+//         res.status(200).sendFile(path.join(__dirname+"img/", req.path));
+//     } catch (err) {
+//         console.log(err);
+//         res.sendStatus(500);
+//     }
+// });
 
 app.post('/upload', async (req, res) => {
     const { title, img } = req.body;

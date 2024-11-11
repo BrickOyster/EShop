@@ -2,7 +2,10 @@ let pdhost = 'localhost';
 let pdport = 13371;
 let odhost = 'localhost';
 let odport = 13373;
-
+// process.env.PRODUCTS_HOST || 
+// process.env.PRODUCTS_PORT || 
+// process.env.ORDERS_HOST   || 
+// process.env.ORDERS_PORT   || 
 let pdurl = `http://${pdhost}:${pdport}/`;
 let odurl = `http://${odhost}:${odport}/`;
 

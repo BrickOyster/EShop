@@ -1,26 +1,20 @@
 services:
   #frontend container
-  # server:
-  #   pull_policy: always
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile  
-  #   ports:
-  #     - "1337:1337"
-  #   depends_on:
-  #     - product_db
-  #     - order_db
-  #   environment:
-  #     PRODUCTS_PORT: 13371
-  #     PRODUCTS_HOST: product_db
-  #     PRODUCTS_USER: rootuser
-  #     PRODUCTS_PASS: root
-  #     PRODUCTS_NAME: product_db
-  #     ORDERS_PORT: 13373
-  #     ORDERS_HOST: order_db
-  #     ORDERS_USER: rootuser
-  #     ORDERS_PASS: root
-  #     ORDERS_NAME: order_db
+  purvana:
+    pull_policy: always
+    build:
+      context: ./frontend/src
+      dockerfile: Dockerfile  
+    ports:
+      - "1337:1337"
+    depends_on:
+      - product_db
+      - order_db
+    environment:
+      PRODUCTS_PORT: 13371
+      PRODUCTS_HOST: product_db_api
+      ORDERS_PORT: 13373
+      ORDERS_HOST: order_db_api
 
   #container for product_db
   product_db:
