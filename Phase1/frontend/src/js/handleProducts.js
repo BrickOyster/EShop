@@ -2,12 +2,10 @@ let pdhost = 'localhost';
 let pdport = 13371;
 let odhost = 'localhost';
 let odport = 13373;
-// process.env.PRODUCTS_HOST || 
-// process.env.PRODUCTS_PORT || 
-// process.env.ORDERS_HOST   || 
-// process.env.ORDERS_PORT   || 
+
 let pdurl = `http://${pdhost}:${pdport}/`;
 let odurl = `http://${odhost}:${odport}/`;
+let url = `http://localhost:1337/`;
 
 let shoppingCart = document.getElementById("shopping-cart");
 let label = document.getElementById("label");
@@ -327,6 +325,16 @@ let cancelEdit = () => {
 }
 
 let deleteProduct = async (id) => {
+  await fetch(url+"delete",
+    {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: "POST",
+      body: JSON.stringify({title: document.getElementById(`h3-${id}`).innerHTML.replace(" ", '_').toLowerCase()+".png"})
+    }
+  );
   await fetch(pdurl,
     {
       headers: {
@@ -340,17 +348,29 @@ let deleteProduct = async (id) => {
 };
 
 let addProduct = async () => {
-  // await fetch(appurl,
-  //   {
-  //     headers: {
-  //       'Accept': 'application/json',
-  //       'Content-Type': 'application/json'
-  //     },
-  //     method: "POST",
-  //     body: JSON.stringify(
-  //       {title: document.getElementById(`add-title`).value.replace(" ", '_').toLowerCase()+".png", 
-  //        image: document.getElementById(`newProfilePhoto`)})
-  //   });
+  const file = document.getElementById(`newProfilePhoto`).files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = async function(event) {
+      const fileContent = event.target.result; // The file's content as text
+      // console.log(document.getElementById(`add-title`).value.replace(" ", '_').toLowerCase()+".png"+"\n"+fileContent.split(',')[1]);
+      await fetch(url+"upload",
+        {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          method: "POST",
+          body: JSON.stringify(
+            {title: document.getElementById(`add-title`).value.replace(" ", '_').toLowerCase()+".png", 
+             image: fileContent.split(',')[1]})
+        });
+    };
+    reader.readAsDataURL(file); 
+  } else {
+    console.log('No file selected');
+  }
+  
   
   await fetch(pdurl,
     {
