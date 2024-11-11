@@ -12,8 +12,9 @@ let generateNavbar = () => {
             </svg>
           </a>
           <a href="index.html?" title="Home">Home</a>
-          <a href="products.html?">Products</a>
+          <a href="products.html?editable=false">Products</a>
           <a href="products.html?editable=true">My Products</a>
+          <a href="orders.html?editable=true">Orders</a>
           </div>
         <div class="navbar icons">
           <input class="navicon" type="text" id="search-box" placeholder="Search..." autocomplete="off">
@@ -95,8 +96,7 @@ let generateNavbar = () => {
         </div>
           `;
     }).join(""));
-}
-generateNavbar();
+}; generateNavbar();
 
 $(document).ready(function(){
 	   
@@ -207,21 +207,6 @@ $(document).ready(function(){
         duration: 250
       }).toggleAttr('display','block','none');
       popupprevid = this.id;
-    }
-  );
-  
-  $('#searchProduct').click(
-    function() {
-      let editRes = new URLSearchParams(window.location.search).get('search') || "";
-      let url = window.location.href; 
-      window.location.href= url + '&search=' + document.getElementById("search-box").value
-    } 
-  );
-
-  $('#search-box').keypress(
-    function(event) {
-      let editRes = new URLSearchParams(window.location.search).get('editable') || "";
-      if(event.which === 13) window.location.href = 'http://127.0.0.1:5500/Phase1/frontend/src/products.html?editable=' + editRes + '&search=' + document.getElementById("search-box").value;
     }
   );
 });

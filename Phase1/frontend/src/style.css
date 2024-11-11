@@ -1,6 +1,7 @@
 :root {
   --color-bg1: #96b4a8;
   --color-bg2: #6ccca4;
+  --color-bga: #ede8d0;
   --color-borders: #27ad75;
   --color-hover: #1d8158;
   --blending: soft-light;
@@ -118,7 +119,7 @@ body {
 	}
 }
 
-.shop {
+.shop, .orders {
   display: grid;
   position: absolute;
   top: 62px;
@@ -133,9 +134,10 @@ body {
   overflow-y: auto;
   scrollbar-width: none;
 
-  .item-card {
+  .item-card, .order-card {
     height: 220px;
     border: var(--weight-borders) solid var(--color-borders);
+    background-color: var(--color-bga);
     border-radius: 5px;
     display: flex;
     
@@ -143,15 +145,94 @@ body {
       margin-bottom: auto;
     }
     
+    .order-contents {
+      float: left;
+      overflow-y: scroll;
+      scrollbar-width: none;
+      width: 70%;
+      padding: 20px;
+      border-right: var(--weight-borders) solid var(--color-borders);
+
+      .order-product {
+        display: flex;
+
+        h3 {
+          float: left;
+          margin-right: auto;
+        }
+
+        h2 {
+          float: right;
+          margin-right: 20px;
+        }
+      }      
+    }
+
+    .status-price {
+      float: right;
+      margin-left: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      text-align: right;
+
+      .status {
+        margin-bottom: auto;
+      }
+
+      .total_price {
+        
+      }
+    }
+
+    textarea {
+      position: absolute;
+      margin-left: 4px;
+      margin-top: 4px;
+      resize: none;
+      text-decoration-line: inherit;
+    }
+
     img {
       float: left;
       height: 100%;
+      min-width: 220px;
       border-radius: 5px 0 0 5px;
+      overflow: hidden;
+      -o-object-fit: cover;
+      object-fit: cover;
+      -o-object-position: center;
+      object-position: center;
+      border-right: var(--weight-borders) solid var(--color-borders);
+    }
+
+    .dummy-image {
+      display: grid;
+      float: left;
+      height: 100%;
+      max-width: 220px;
+      border-radius: 5px 0 0 5px;
+      overflow: hidden;
+      border-right: var(--weight-borders) solid var(--color-borders);
+      .uploadProfileInput {
+        height: 100%;
+        width: 100%;
+        grid-column: 1;
+        grid-row: 1;
+        cursor: pointer;
+        z-index: 1;
+        opacity: 0;
+      }
+      img {
+        grid-column: 1;
+        grid-row: 1;
+        z-index: 0;
+      }
     }
 
     .details {
       float: right;
-      text-align: right;
+      text-align: left;
       flex-grow: 1;
       display: flex;
       flex-direction: column;
@@ -182,15 +263,15 @@ body {
         user-select: none;
 
         >.quantity {
-          border: var(--weight-borders) solid var(--color-borders);
+          border-left: var(--weight-borders) solid #ff6961;
+          border-right: var(--weight-borders) solid #C1E1C1;
           min-width: 40px;
           min-height: 100%;
           align-content: center;
         }
         
         .bi-dash-lg {
-          color: #ffffff;
-          background-color: #940000;
+          background-color: #ff6961;
           width: 30px;
           min-height: 100%;
           border-radius: 5px 0 0 5px;
@@ -198,26 +279,23 @@ body {
         }
           
         .bi-plus-lg {
-          color: #ffffff;
-          background-color: #008a00;
+          background-color: #C1E1C1;
           width: 30px;
           min-height: 100%;
           border-radius: 0 5px 5px 0;
           align-content: center;
         }
           
-        .bi-edit-lg {
-          color: #ffffff;
-          background-color: #940000;
+        .bi-bin-lg {
+          background-color: #ff6961;
           width: 30px;
           min-height: 100%;
           border-radius: 5px 0 0 5px;
           align-content: center;
         }
           
-        .bi-bin-lg {
-          color: #ffffff;
-          background-color: #008a00;
+        .bi-edit-lg {
+          background-color: #C1E1C1;
           width: 30px;
           min-height: 100%;
           border-radius: 0 5px 5px 0;
@@ -260,6 +338,7 @@ body {
     border-top: var(--weight-borders) dotted var(--color-borders);
     border-bottom: var(--weight-borders) dotted var(--color-borders);
     border-radius: 5px;
+    background-color: var(--color-bga);
     display: flex;
     flex-direction: row;
     height: 100px;
@@ -267,6 +346,7 @@ body {
 
     img {
       border-radius: 5px 0 0 5px;
+      border-right: var(--weight-borders) dotted var(--color-borders);
     }
 
     .details {

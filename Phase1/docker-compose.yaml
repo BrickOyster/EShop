@@ -1,9 +1,28 @@
 services:
-  # app:
-  #   image: purrvana-app
+  #frontend container
+  # server:
+  #   pull_policy: always
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile  
   #   ports:
-  #     - 1337:1337 
+  #     - "1337:1337"
+  #   depends_on:
+  #     - product_db
+  #     - order_db
+  #   environment:
+  #     PRODUCTS_PORT: 13371
+  #     PRODUCTS_HOST: product_db
+  #     PRODUCTS_USER: rootuser
+  #     PRODUCTS_PASS: root
+  #     PRODUCTS_NAME: product_db
+  #     ORDERS_PORT: 13373
+  #     ORDERS_HOST: order_db
+  #     ORDERS_USER: rootuser
+  #     ORDERS_PASS: root
+  #     ORDERS_NAME: order_db
 
+  #container for product_db
   product_db:
     image: postgres
     container_name: product_db
@@ -13,41 +32,76 @@ services:
     ports:
       - "13370:5432"
     environment:
-      POSTGRES_HOST: localhost
+      POSTGRES_HOST: product_db
       POSTGRES_PORT: 5432
       POSTGRES_DB: product_db
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: rootuser
+      POSTGRES_USER: rootuser
+      POSTGRES_PASSWORD: root
     volumes:
-    - .data/product_db:/var/lib/postgresql/data
+    - product_db:/var/lib/postgresql/data
     - ./pd_init.sql:/docker-entrypoint-initdb.d/init.sql
-
-  # order_db:
-  #   image: postgres
-  #   container_name: order_db
-  #   restart: always
-  #   expose:
-  #     - 13371
-  #   ports:
-  #     - "13371:5432"
-  #   environment:
-  #     POSTGRES_HOST: localhost
-  #     POSTGRES_PORT: 5432
-  #     POSTGRES_DB: product_db
-  #     POSTGRES_USER: root
-  #     POSTGRES_PASSWORD: rootuser
-  #   volumes:
-  #   - .data/order_db:/var/lib/postgresql/data
-  #   - ./od_init.sql:/docker-entrypoint-initdb.d/init.sql
-    
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin4_container
-    restart: always
+  
+  #container for product_db api
+  product_db_api:
+    container_name: product_db_api
+    pull_policy: always
+    build:
+      context: ./backend/productdb
+      dockerfile: Dockerfile  
+    expose:
+      - 13371
     ports:
-      - "8888:80" 
-    environment: 
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com 
-      PGADMIN_DEFAULT_PASSWORD: admin 
+      - "13371:13371"
+    environment:
+      SERVICE_PORT: 13371
+      POSTGRES_HOST: product_db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: product_db
+      POSTGRES_USER: rootuser
+      POSTGRES_PASSWORD: root
+    depends_on:
+      - product_db
+
+  #container for order_db
+  order_db:
+    image: postgres
+    container_name: order_db
+    restart: always
+    expose:
+      - 13372
+    ports:
+      - "13372:5432"
+    environment:
+      POSTGRES_HOST: order_db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: order_db
+      POSTGRES_USER: rootuser
+      POSTGRES_PASSWORD: root
     volumes:
-      - .data/pgadmin:/var/lib/pgadmin/data
+    - order_db:/var/lib/postgresql/data
+    - ./od_init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  #container for order_db api
+  order_db_api:
+    container_name: order_db_api
+    pull_policy: always
+    build:
+      context: ./backend/orderdb
+      dockerfile: Dockerfile 
+    expose:
+      - 13373
+    ports:
+      - "13373:13373"
+    environment:
+      SERVICE_PORT: 13373
+      POSTGRES_HOST: order_db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: order_db
+      POSTGRES_USER: rootuser
+      POSTGRES_PASSWORD: root
+    depends_on:
+      - order_db
+
+volumes:
+  order_db:
+  product_db:
