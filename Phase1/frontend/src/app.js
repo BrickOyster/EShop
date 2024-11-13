@@ -40,6 +40,19 @@ app.post('/upload', async (req, res) => {
     }
 });
 
+// app.post('/rename', async (req, res) => {
+//     const { title, new_title } = req.body;
+//     let imgPath = path.join(__dirname, `img/${title}`);
+//     let new_imgPath = path.join(__dirname, `img/${new_title}`);
+//     try {
+//         fs.rename(imgPath, new_imgPath, (err) => {});
+//         res.sendStatus(200);
+//     } catch (err) {
+//         console.log(err);
+//         res.sendStatus(500);
+//     }
+// });
+
 app.post('/remove', async (req, res) => {
     const { title } = req.body;
     let imgPath = path.join(__dirname, `img/${title}`);
@@ -84,6 +97,7 @@ app.delete('/products', async (req, res) => {
                 "Content-Type": "application/json"
             }
         });
+
         res.status(200).json(response.data);
     } catch (error) {
         console.error(error);

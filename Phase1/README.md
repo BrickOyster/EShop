@@ -5,3 +5,6 @@ Run with docker compose up -d --build
 
 Stop local instance with 
     docker stop $(docker ps -a -q)
+
+Bugs:
+    changing product name (Disabled) does not update image file
