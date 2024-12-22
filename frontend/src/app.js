@@ -66,9 +66,13 @@ app.post('/remove', async (req, res) => {
     }
 });
 
-app.get('/products', async (req, res) => {
+app.post('/products', async (req, res) => {
     try {
-        const response = await axios.get(pdurl);
+        const response = await axios.post(pdurl, req.body, {
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
         res.status(200).json(response.data);
     } catch (error) {
         console.error(error);
@@ -76,9 +80,9 @@ app.get('/products', async (req, res) => {
     }
 });
 
-app.post('/products', async (req, res) => {
+app.post('/products/add', async (req, res) => {
     try {
-        const response = await axios.post(pdurl, req.body, {
+        const response = await axios.post(pdurl+'add', req.body, {
             headers: {
                 "Content-Type": "application/json"
             }
@@ -119,9 +123,13 @@ app.post('/products/update', async (req, res) => {
     }
 });
 
-app.get('/orders', async (req, res) => {
+app.post('/orders', async (req, res) => {
     try {
-        const response = await axios.get(odurl);
+        const response = await axios.post(odurl, req.body, {
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
         res.status(200).json(response.data);
     } catch (error) {
         console.error(error);
@@ -129,9 +137,9 @@ app.get('/orders', async (req, res) => {
     }
 });
 
-app.post('/orders', async (req, res) => {
+app.post('/orders/add', async (req, res) => {
     try {
-        const response = await axios.post(odurl, req.body, {
+        const response = await axios.post(odurl+'add', req.body, {
             headers: {
                 "Content-Type": "application/json"
             }

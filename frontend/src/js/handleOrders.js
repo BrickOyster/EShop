@@ -8,6 +8,9 @@ var globalShopProducts;
 var globalShopOrders;
 // Shop filter
 var filter;
+// User
+var jwt_token = 's'
+var userToken = 'user1'
 
 // Updates/Filters products page
 let generateShop = () => {
@@ -111,7 +114,13 @@ let calculation = () => {
 let getShopItems = async (retake) => {
   if(retake === 2){
     try {
-      const response = await fetch('/products');
+      const response = await fetch('/products', {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({usertoken: userToken})
+      });
       if(!response.ok){
         throw new Error("Could not fetch resource");
       }
@@ -120,7 +129,13 @@ let getShopItems = async (retake) => {
       globalShopProducts = data;
       globalShopProducts.push("Dummy");
       console.log(globalShopProducts);
-      const response2 = await fetch('/orders');
+      const response2 = await fetch('/orders', {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({usertoken: userToken})
+      });
       if(!response2.ok){
         throw new Error("Could not fetch resource");
       }
@@ -134,7 +149,13 @@ let getShopItems = async (retake) => {
     }
   } else if (retake) {
     try {
-      const response = await fetch('/products');
+      const response = await fetch('/products', {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({usertoken: userToken})
+      });
       if(!response.ok){
         throw new Error("Could not fetch resource");
       }
@@ -195,9 +216,40 @@ let removeItem = (id) => {
   getShopItems(0);
 };
 
-let submitOrder = () => { // To complete
-  console.log("Order submited.");
-  clearCart();
+let submitOrder = async () => {
+  if (basket.length === 0) return;
+  
+  let products = basket.map((item) => {
+      let product = globalShopProducts.find((p) => p.id === item.id);
+      return {
+          title: product.title,
+          amount: item.item,
+          product_id: product.id
+      };
+  });
+
+  let totalPrice = products.reduce((acc, item) => {
+      let product = globalShopProducts.find((p) => p.id === item.product_id);
+      return acc + (item.amount * (product.price || 0));
+  }, 0).toFixed(2);
+
+  try {
+    let response = await fetch('/orders/add', {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({products: JSON.stringify(products), total_price: totalPrice, usertoken: userToken})
+    });
+    if (response.ok) {
+      clearCart();
+    } else {
+      console.error("Error placing order:", response.statusText);
+    }
+  } catch (error) {
+    console.error("Error placing order:", error);
+  }
+  getShopItems(2);
 }
 
 $(document).ready(function(){

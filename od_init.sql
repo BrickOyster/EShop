@@ -2,7 +2,8 @@ CREATE TABLE IF NOT EXISTS orders (
     id SERIAL PRIMARY KEY,
     products JSONB NOT NULL,
     total_price DECIMAL(10, 2) NOT NULL,
-    status VARCHAR(20) DEFAULT 'Pending'
+    status VARCHAR(20) DEFAULT 'Pending',
+    usertoken VARCHAR(255) NOT NULL
 );
 
 -- INSERT INTO orders (products, total_price, status) VALUES

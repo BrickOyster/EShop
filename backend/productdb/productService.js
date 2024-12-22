@@ -7,11 +7,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get('/', async (req, res) => {
+app.post('/', async (req, res) => {
+    const { usertoken } = req.body
     try {
-        // console.log(req.body);
-        const data = await pool.query('SELECT * FROM products')
+        console.log(req.body);
+        const data = await pool.query('SELECT * FROM products WHERE usertoken = $1', [usertoken])
         // console.log(data.rows);
+        console.log(data)
         res.status(200).send(data.rows)
     } catch (err) {
         console.log(err)
@@ -19,10 +21,10 @@ app.get('/', async (req, res) => {
     }
 });
 
-app.post('/', async (req, res) => {
-    const { title, image, description, price, quantity } = req.body
+app.post('/add', async (req, res) => {
+    const { title, image, description, price, quantity, usertoken } = req.body
     try {
-        await pool.query('INSERT INTO products ( title, image, description, price, quantity ) VALUES ($1, $2, $3, $4, $5)', [title, image, description, price, quantity])
+        await pool.query('INSERT INTO products ( title, image, description, price, quantity, usertoken ) VALUES ($1, $2, $3, $4, $5, $6)', [title, image, description, price, quantity, usertoken])
         res.status(200).send({ message: "Successfully added product" })
     } catch (err) {
         console.log(err)

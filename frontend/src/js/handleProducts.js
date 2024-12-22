@@ -177,7 +177,13 @@ let calculation = () => {
 let getShopItems = async (retake) => {
   if (retake) {
     try {
-      const response = await fetch('/products');
+      let response = await fetch('/products', {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({usertoken: 'user1'})
+      });
       if(!response.ok){
         throw new Error("Could not fetch resource");
       }
@@ -256,12 +262,12 @@ let submitOrder = async () => {
   }, 0).toFixed(2);
 
   try {
-    let response = await fetch('/orders', {
+    let response = await fetch('/orders/add', {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({products: JSON.stringify(products), total_price: totalPrice})
+      body: JSON.stringify({products: JSON.stringify(products), total_price: totalPrice, usertoken: 'user1'})
     });
     if (response.ok) {
       clearCart();
@@ -366,7 +372,7 @@ let addProduct = async () => {
   }
   
   
-  await fetch('/products',
+  await fetch('/products/add',
     {
       headers: {
         'Accept': 'application/json',
@@ -378,7 +384,8 @@ let addProduct = async () => {
          image: document.getElementById(`add-title`).value.replace(" ", '_').toLowerCase()+".png", 
          description: document.getElementById(`add-description`).value, 
          price: document.getElementById(`add-price`).value,  
-         quantity: 100})
+         quantity: 100,
+         usertoken: 'user1'})
     });
   getShopItems(1);
 }
