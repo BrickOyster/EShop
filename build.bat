@@ -1,3 +1,4 @@
+docker compose down
 echo y | docker system prune
 docker volume rm eshop_order_db eshop_product_db
 cls

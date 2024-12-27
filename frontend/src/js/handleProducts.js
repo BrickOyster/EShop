@@ -6,6 +6,8 @@ let basket = JSON.parse(localStorage.getItem("basket")) || [];
 var globalShopProducts;
 // Shop filter
 var filter;
+// User vars
+var userToken = 'user1'
 
 // Updates/Filters products page
 let generateShop = () => {
@@ -175,6 +177,7 @@ let calculation = () => {
 
 // Updates whole page fetching (retare === 1) or not (retake === 0) database data
 let getShopItems = async (retake) => {
+  let editable = new URLSearchParams(window.location.search).get('editable') || "";
   if (retake) {
     try {
       let response = await fetch('/products', {
@@ -182,7 +185,7 @@ let getShopItems = async (retake) => {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({usertoken: 'user1'})
+        body: JSON.stringify({usertoken: (editable === 'true')?userToken:null})
       });
       if(!response.ok){
         throw new Error("Could not fetch resource");
@@ -267,7 +270,7 @@ let submitOrder = async () => {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({products: JSON.stringify(products), total_price: totalPrice, usertoken: 'user1'})
+      body: JSON.stringify({products: JSON.stringify(products), total_price: totalPrice, usertoken: userToken})
     });
     if (response.ok) {
       clearCart();
@@ -385,7 +388,7 @@ let addProduct = async () => {
          description: document.getElementById(`add-description`).value, 
          price: document.getElementById(`add-price`).value,  
          quantity: 100,
-         usertoken: 'user1'})
+         usertoken: userToken})
     });
   getShopItems(1);
 }

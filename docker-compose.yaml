@@ -8,8 +8,8 @@ services:
     ports:
       - "1337:1337"
     depends_on:
-      - product_db
-      - order_db
+      - product_db_api
+      - order_db_api
     environment:
       PRODUCTS_PORT: 13371
       PRODUCTS_HOST: product_db_api
@@ -55,6 +55,7 @@ services:
       POSTGRES_PASSWORD: root
     depends_on:
       - product_db
+      - kafka
 
   #container for order_db
   order_db:
@@ -95,6 +96,39 @@ services:
       POSTGRES_PASSWORD: root
     depends_on:
       - order_db
+      - kafka
+  
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.2.1
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+
+  kafka:
+    image: confluentinc/cp-kafka:7.2.1
+    container_name: kafka
+    ports:
+      - "8097:8097"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: EXTERNAL:PLAINTEXT,INTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: EXTERNAL://localhost:8097,INTERNAL://kafka:19092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: localhost
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "ping", "-c", "1", "localhost:8097"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
 volumes:
   order_db:
