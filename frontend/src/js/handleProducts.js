@@ -6,17 +6,15 @@ let basket = JSON.parse(localStorage.getItem("basket")) || [];
 var globalShopProducts;
 // Shop filter
 var filter;
-// User vars
-var userToken = 'user1'
+// User vars from main.js
 
 // Updates/Filters products page
 let generateShop = () => {
   let searchRes = filter || "";
-  let editable = new URLSearchParams(window.location.search).get('editable') || "";
   document.getElementById('search-box').value = filter || "";
 
   if(shop !== null) {
-    if (editable === 'true') {
+    if (userRole === 'seller') {
       return (shop.innerHTML = globalShopProducts
         .map((x) => {
           if (x === "Dummy") {
@@ -73,7 +71,7 @@ let generateShop = () => {
           </div>
           `;
         }).join(""));
-    } else {
+    } else if (userRole === 'customer') {
       return (shop.innerHTML = globalShopProducts
         .map((x) => {
           if(x === "Dummy") return;
@@ -177,7 +175,6 @@ let calculation = () => {
 
 // Updates whole page fetching (retare === 1) or not (retake === 0) database data
 let getShopItems = async (retake) => {
-  let editable = new URLSearchParams(window.location.search).get('editable') || "";
   if (retake) {
     try {
       let response = await fetch('/products', {
@@ -185,7 +182,7 @@ let getShopItems = async (retake) => {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({usertoken: (editable === 'true')?userToken:null})
+        body: JSON.stringify({usertoken: (userRole === 'seller')?userToken:null})
       });
       if(!response.ok){
         throw new Error("Could not fetch resource");

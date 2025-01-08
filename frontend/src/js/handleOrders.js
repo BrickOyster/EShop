@@ -8,14 +8,12 @@ var globalShopProducts;
 var globalShopOrders;
 // Shop filter
 var filter;
-// User
-var jwt_token = 's'
-var userToken = 'user1'
+// User vars from main.js
+if (userRole !== "customer") { window.location.href = "http://localhost:1337/"; }
 
 // Updates/Filters products page
 let generateShop = () => {
   let searchRes = filter || "";
-  let editable = new URLSearchParams(window.location.search).get('editable') || "";
   document.getElementById('search-box').value = filter || "";
 
   if(orders !== null) {

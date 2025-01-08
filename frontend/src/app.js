@@ -9,9 +9,126 @@ let pdhost = process.env.PRODUCTS_HOST || 'localhost';
 let pdport = process.env.PRODUCTS_PORT || 13371;
 let odhost = process.env.ORDERS_HOST   || 'localhost';
 let odport = process.env.ORDERS_PORT   || 13373;
+let kchost = process.env.AUTH_HOST   || 'localhost';
+let kcport = process.env.AUTH_PORT   || 8182;
 
 let pdurl = `http://${pdhost}:${pdport}/`;
 let odurl = `http://${odhost}:${odport}/`;
+let kcurl = `http://${kchost}:${kcport}/`;
+
+function decodeJwt(jwtToken) {
+    const base64Url = jwtToken.split('.')[1]; // Get the payload part of the JWT
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/'); // Replace Base64 URL encoding characters
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join('')); // Decode Base64 and handle URI component encoding
+  
+    return JSON.parse(jsonPayload);
+}
+
+async function loginUser(getUsernameLogin, getPasswordLogin){
+    try { 
+        const headers = { "Content-Type": "application/x-www-form-urlencoded" };
+        
+        const body = new URLSearchParams({
+            username: getUsernameLogin,
+            password: getPasswordLogin,
+            client_id: "eshop-client",
+            grant_type: "password"
+        }).toString();
+    
+        const response = await axios.post(kcurl+"realms/eshop/protocol/openid-connect/token", body, { headers }); 
+        const token = response.data
+        
+        //store in localstorage username, email, role (customer, seller) and refresh_token
+        const decodeToken = await decodeJwt(token.access_token)
+        return {ret: true, tok: token, dec: decodeToken}
+    } catch (error) { console.error("Error on login:", error.response ? error.response.data : error.message); return {ret: false, tok: null, dec: null}; }
+}
+
+async function refreshUser(getToken){
+    try { 
+        const headers = { "Content-Type": "application/x-www-form-urlencoded" };
+        
+        const body = new URLSearchParams({
+            client_id: "eshop-client",
+            grant_type: "refresh_token",
+            refresh_token: getToken
+        }).toString();
+    
+        const response = await axios.post(kcurl+"realms/eshop/protocol/openid-connect/token", body, { headers }); 
+        const token = response.data
+        
+        //store in localstorage username, email, role (customer, seller) and refresh_token
+        const decodeToken = await decodeJwt(token.access_token)
+        return {ret: true, tok: token, dec: decodeToken}
+    } catch (error) { console.error("Error on refresh:", error.response ? error.response.data : error.message); return {ret: false, tok: null, dec: null}; }
+}
+
+async function logoutUser(getToken){
+    try { 
+        const headers = { "Content-Type": "application/x-www-form-urlencoded" };
+        
+        const body = new URLSearchParams({
+            client_id: "eshop-client",
+            refresh_token: getToken
+        }).toString();
+        await axios.post(kcurl+"realms/eshop/protocol/openid-connect/logout", body, { headers }); 
+        return true
+    } catch (error) { console.error("Error on logout:", error.response ? error.response.data : error.message); return false; }
+}
+
+async function registerUser(getUsername, getEmail, getFirstName, getLastName, getPassword, getRole) {
+    try {
+        const fheaders = { "Content-Type": "application/x-www-form-urlencoded" };
+        
+        const fbody = new URLSearchParams({
+            username: "admin",
+            password: "admin",
+            client_id: "admin-cli",
+            grant_type: "password"
+        }).toString();
+
+        //get admin access token
+        const first_response = await axios.post(kcurl+"realms/master/protocol/openid-connect/token", fbody, { fheaders })
+        
+        const token = first_response.data.access_token
+        const refresh = first_response.data.access_token
+        console.log("Got admin token. "+ token + " " + refresh);
+
+        const sHeaders = { 'Content-Type': 'application/x-www-form-urlencoded', 'Authorization': 'Bearer '+ token};
+
+        const sbody = new URLSearchParams({
+            email: getEmail,
+            enabled: true,
+            username: getUsername,
+            firstName: getFirstName,
+            lastName: getLastName,
+            attributes: {
+                client_id: "eshop-client"
+            },
+            groups: [ getRole ],
+            credentials: [
+                {
+                    type: "password",
+                    value: getPassword,
+                    temporary: false
+                }
+            ]
+        }).toString(); console.log(sbody);
+
+        const registerUser =  await axios.post(kcurl+"admin/realms/eshop/users", sbody, { sHeaders })
+            
+        if (response.status === 201) {
+            alert('Register is ok')
+            return true
+        } else {
+            const err = await registerUser.json()
+            console.log(err)
+            return false
+        }
+    } catch (error) { console.error("Error on register:", error.response ? error.response.data : error.message); return false; }
+}
 
 const app = express();
 app.use(cors());
@@ -23,6 +140,59 @@ app.get('/', async (req, res) => {
         res.set('Content-Type', 'text/html');
         res.status(200).sendFile(path.join(__dirname, 'index.html'));
     } catch (err) {
+        console.log(err);
+        res.sendStatus(500);
+    }
+});
+
+app.post('/login', async (req, res) => {
+    const { getUsername, getPassword } = req.body;
+    const { ret, tok, dec } = await loginUser(getUsername, getPassword);
+    if(ret) {
+        console.log("Login ok")
+        res.status(200).json({token:tok, decoded:dec});
+    } else {
+        console.log("Login not ok")
+        res.sendStatus(500);
+    }
+});
+
+app.post('/refresh', async (req, res) => {
+    const { getToken } = req.body;
+    const { ret, tok, dec } = await refreshUser(getToken);
+    if(ret) {
+        console.log("Refresh ok")
+        res.status(200).json({token:tok, decoded:dec});
+    } else {
+        console.log("Refresh not ok")
+        res.sendStatus(500);
+    }
+});
+
+app.post('/logout', async (req, res) => {
+    const { getToken } = req.body;
+    const responce = await logoutUser(getToken);
+    if(responce) {
+        console.log("Logout ok")
+        res.sendStatus(200);
+    } else {
+        console.log("Logout not ok")
+        res.sendStatus(500);
+    }
+});
+
+app.post('/register', async (req, res) => {
+    const { getUsername, getEmail, getFirstName, getLastName, getPassword, getRole } = req.body;
+    try {
+        const responce = await registerUser(getUsername, getEmail, getFirstName, getLastName, getPassword, getRole);
+        if(responce) {
+            const { ret, tok, dec } = await loginUser(getUsername, getPassword);
+            if (ret) {
+                res.status(200).json({token:tok, decoded:dec});
+            } else { res.sendStatus(500); }
+        } else { res.sendStatus(500); }
+    } catch (err) {
+        console.log("Connection Error.")
         console.log(err);
         res.sendStatus(500);
     }

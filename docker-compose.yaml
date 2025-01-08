@@ -1,30 +1,36 @@
 services:
   #frontend container
   purvana:
+    container_name: purvana
     pull_policy: always
     build:
       context: ./frontend/src
       dockerfile: Dockerfile  
     ports:
-      - "1337:1337"
+    - "1337:1337"
     depends_on:
-      - product_db_api
-      - order_db_api
+    - product_db_api
+    - order_db_api
+    - keycloak-w
     environment:
       PRODUCTS_PORT: 13371
       PRODUCTS_HOST: product_db_api
       ORDERS_PORT: 13373
       ORDERS_HOST: order_db_api
+      AUTH_PORT: 8080
+      AUTH_HOST: keycloak-w
+    networks:
+    - app-network
 
   #container for product_db
   product_db:
-    image: postgres
     container_name: product_db
+    image: postgres
     restart: always
     expose:
-      - 13370
+    - 13370
     ports:
-      - "13370:5432"
+    - "13370:5432"
     environment:
       POSTGRES_HOST: product_db
       POSTGRES_PORT: 5432
@@ -34,6 +40,8 @@ services:
     volumes:
     - product_db:/var/lib/postgresql/data
     - ./pd_init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+    - product_db_network
   
   #container for product_db api
   product_db_api:
@@ -43,9 +51,9 @@ services:
       context: ./backend/productdb
       dockerfile: Dockerfile  
     expose:
-      - 13371
+    - 13371
     ports:
-      - "13371:13371"
+    - "13371:13371"
     environment:
       SERVICE_PORT: 13371
       POSTGRES_HOST: product_db
@@ -54,18 +62,21 @@ services:
       POSTGRES_USER: rootuser
       POSTGRES_PASSWORD: root
     depends_on:
-      - product_db
-      - kafka
+    - product_db
+    - kafka
+    networks:
+    - app-network
+    - product_db_network
 
   #container for order_db
   order_db:
-    image: postgres
     container_name: order_db
+    image: postgres
     restart: always
     expose:
-      - 13372
+    - 13372
     ports:
-      - "13372:5432"
+    - "13372:5432"
     environment:
       POSTGRES_HOST: order_db
       POSTGRES_PORT: 5432
@@ -75,6 +86,8 @@ services:
     volumes:
     - order_db:/var/lib/postgresql/data
     - ./od_init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+    - order_db_network
 
   #container for order_db api
   order_db_api:
@@ -84,9 +97,9 @@ services:
       context: ./backend/orderdb
       dockerfile: Dockerfile 
     expose:
-      - 13373
+    - 13373
     ports:
-      - "13373:13373"
+    - "13373:13373"
     environment:
       SERVICE_PORT: 13373
       POSTGRES_HOST: order_db
@@ -95,22 +108,29 @@ services:
       POSTGRES_USER: rootuser
       POSTGRES_PASSWORD: root
     depends_on:
-      - order_db
-      - kafka
+    - order_db
+    - kafka
+    networks:
+    - app-network
+    - order_db_network
   
+  # Persistent storage of Kafka
   zookeeper:
     image: confluentinc/cp-zookeeper:7.2.1
     container_name: zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+    - kafka_db_network
 
+  # Kafka container
   kafka:
-    image: confluentinc/cp-kafka:7.2.1
     container_name: kafka
+    image: confluentinc/cp-kafka:7.2.1
     ports:
-      - "8097:8097"
+    - "8097:8097"
     depends_on:
-      - zookeeper
+    - zookeeper
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -124,12 +144,73 @@ services:
       KAFKA_JMX_PORT: 9101
       KAFKA_JMX_HOSTNAME: localhost
     restart: on-failure
-    healthcheck:
-      test: ["CMD", "ping", "-c", "1", "localhost:8097"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+    networks:
+    - app-network
+    - kafka_db_network
+  
+  # Persistent storage of Keycloak
+  keycloak_db:
+    container_name: keycloak_db
+    image: postgres
+    environment:
+      POSTGRES_HOST: keycloak_db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: keycloak_db
+      POSTGRES_USER: rootuser
+      POSTGRES_PASSWORD: root
+    volumes:
+    - keycloak-db-data:/var/lib/postgresql/data
+    ports:
+    - "5434:5432"
+    networks:
+    - keycloak_db_network
+    
+  # Keycloak container
+  keycloak-w:
+    container_name: keycloak-w
+    image: quay.io/keycloak/keycloak:26.0.5
+    expose:
+    - 8080
+    ports:
+    - 8080:8080
+    restart: unless-stopped
+    command: 
+    - start-dev
+    - --import-realm
+    environment:
+      # User and password for the Administration Console
+      KC_BOOTSTRAP_ADMIN_USERNAME: tadmin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: tadmin
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_STRICT_HTTPS: false
+      KC_HTTP_ENABLED: true
+      KC_HOSTNAME_STRICT: false
+      # Same values as the keycloak_db service
+      DB_VENDOR: postgres
+      DB_ADDR: keycloak_db
+      DB_PORT: 5432
+      DB_DATABASE: keycloak_db
+      DB_USER: rootuser
+      DB_PASSWORD: root
+    depends_on:
+    - keycloak_db
+    volumes:
+    - keycloak-realm-data:/opt/jboss/keycloak/standalone/data
+    - ./kc_init.json:/opt/keycloak/data/import/realm-config.json
+    networks:
+    - app-network
+    - keycloak_db_network
 
 volumes:
   order_db:
   product_db:
+  keycloak-realm-data:
+  keycloak-db-data:
+
+networks:
+  app-network:
+    driver: bridge
+  product_db_network:
+  order_db_network:
+  kafka_db_network:
+  keycloak_db_network:

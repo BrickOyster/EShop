@@ -13,9 +13,11 @@ app.post('/', async (req, res) => {
     try {
         // console.log(req.body);
         if (usertoken === null){
+          console.log("all")
           const data = await pool.query('SELECT * FROM products')
           res.status(200).send(data.rows)
         } else {
+          console.log("not all")
           const data = await pool.query('SELECT * FROM products WHERE usertoken = $1', [usertoken])
           res.status(200).send(data.rows)
         }

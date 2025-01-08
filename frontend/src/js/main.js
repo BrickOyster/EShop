@@ -1,8 +1,59 @@
+// User vars
+const refreshToken = localStorage.getItem('refresh_token');
+const accessToken = localStorage.getItem('access_token');
+const decoded = JSON.parse(localStorage.getItem('decoded'));
+var userToken = ''
+var userRole = ''
+var loggedIn = false;
+
+if (accessToken && decoded) {
+  userToken = decoded.preferred_username;
+  userRole = decoded.realm_access.roles[0];
+  const expirationTime = decoded.exp;
+
+  // Check if the token has expired
+  const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+  if (expirationTime > currentTime) {
+      console.log(`Welcome back ${userRole}, ${userToken}`);
+      loggedIn = true;
+      refreshUser();
+  } else {
+      console.log('Token has expired, please log in again.');
+      // You might want to clear localStorage and redirect to login
+      localStorage.removeItem('refresh_token');
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('decoded');
+      window.location.href = "http://localhost:1337/";
+  }
+}
+
+async function refreshUser() {
+  let response = await fetch('/refresh', {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ getToken: refreshToken })
+  });
+  
+  if (response.ok) {
+    const data = await response.json();
+    console.log(data)
+    localStorage.setItem('refresh_token', data.token.refresh_token);
+    localStorage.setItem('access_token', data.token.access_token);
+    localStorage.setItem('decoded', JSON.stringify(data.decoded));
+  } else {
+    console.log('Refresh failed.')
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('decoded');
+    window.location.href = "http://localhost:1337/";
+  }
+}
+
 let generateNavbar = () => {
   let navbar = document.getElementById('navbar')
-  return (navbar.innerHTML = [1]
-    .map(() => {
-      return`
+  var navbartext = `
         <div class="navbar menu">
           <a href="index.html?" title="Home">
             <svg xmlns="http://www.w3.org/2000/svg" width="137px" height="62px" viewBox="0 0 137 62" version="1.1">
@@ -11,11 +62,22 @@ let generateNavbar = () => {
               />
             </svg>
           </a>
-          <a href="index.html?" title="Home">Home</a>
-          <a href="products.html?editable=false">Products</a>
-          <a href="products.html?editable=true">My Products</a>
-          <a href="orders.html?editable=true">Orders</a>
-          </div>
+          <a href="index.html?" title="Home">Home</a>`
+    if (loggedIn) { // If athenticated
+      if (userRole === "customer") { // If customer
+        navbartext += `
+          <a href="products.html">Products</a>
+          <a href="orders.html">Orders</a>
+          `;
+      } else if (userRole === "seller") { // If seller
+        navbartext += `
+          <a href="products.html">My Products</a>
+          `;
+      }
+    }
+         
+  navbartext += `
+        </div>
         <div class="navbar icons">
           <input class="navicon" type="text" id="search-box" placeholder="Search..." autocomplete="off">
           <!-- <div class="popup" id="poponclick0"></div> -->
@@ -48,9 +110,11 @@ let generateNavbar = () => {
             </svg>
           </a>
           <div class="popup" id="poponclick3">
-            <div class="authbox">
-              <h2>Login</h2>
-              <form action="">
+            <div class="authbox">`
+  if (!loggedIn) {
+    navbartext +=`
+              <h2 class="boxh2">Login</h2>
+              <form id="form" action="">
                 <!-- Login -->
                 <div class="login-form">
                   <label for="username">Username</label>
@@ -62,25 +126,25 @@ let generateNavbar = () => {
 
                 <!-- Register -->
                 <div class="register-form">
-                  <label for="first-name">First Name</label>
-                  <input disabled type="text" id="first-name" placeholder="First Name" autocomplete="off">
+                  <label for="first_name">First Name</label>
+                  <input disabled type="text" id="first_name" placeholder="First Name" autocomplete="off">
 
-                  <label for="last-name">Last Name</label>
-                  <input disabled type="text" id="last-name" placeholder="Last Name" autocomplete="off">
+                  <label for="last_name">Last Name</label>
+                  <input disabled type="text" id="last_name" placeholder="Last Name" autocomplete="off">
 
                   <label for="email">E-mail Adress</label>
                   <input disabled type="text" id="email" placeholder="E-mail Address" autocomplete="off">
 
-                  <label for="confirm-email">Confirm E-mail Address</label>
-                  <input disabled type="text" id="confirm-email" placeholder="Confirm E-mail Address" autocomplete="off">
+                  <label for="confirm_email">Confirm E-mail Address</label>
+                  <input disabled type="text" id="confirm_email" placeholder="Confirm E-mail Address" autocomplete="off">
 
-                  <div class="captcha">
-                    <label for="captcha">What is <strong>10 + 3</strong>?</label>
-                    <input disabled type="text" id="captcha" placeholder="Your answer" autocomplete="off">
+                  <div class="role">
+                    <label for="role">Role Selection</strong>?</label>
+                    <input disabled type="text" id="role" placeholder="Role" autocomplete="off">
                   </div>
                 </div>
 
-                <!-- Logged In -->
+                <!-- Logged In seller customer-->
                 <!--
                 <div class="logged-in-form"></div> --!>
 
@@ -88,15 +152,46 @@ let generateNavbar = () => {
                 <input type="submit" id="submit" value="Login" autocomplete="off">
 
                 <!-- Help -->
-                <a href="register.htm" class="register" title="Toggle">Register!</a>
+                <a href="register" class="register" title="Toggle">Register!</a>
                 <a href="#forgotpassword" class="forgot-password" title="Forgot password?">Forgor?</a>
               </form>
             </div>
           </div>
-        </div>
-          `;
-    }).join(""));
+        </div>`;
+  } else {
+    navbartext +=`
+              <h2 class="boxh2">Welcome back ${userRole}\n${userToken}</h2>
+              <button onclick="logoutUser()">Logout</button>
+            </div>
+          </div>
+        </div>`;
+  }
+         
+  navbar.innerHTML = navbartext;
+  return navbar.innerHTML
 }; generateNavbar();
+
+async function logoutUser() {
+  console.log("Logout");
+  let response = await fetch('/logout', {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ getToken: refreshToken })
+  });
+  
+  if (response.ok) {
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('decoded');
+    console.log('Loged out.')
+    window.location.href = "http://localhost:1337/";
+  } else {
+    console.log('Logout failed.')
+    console.log(response)
+  }
+}
 
 $(document).ready(function(){
 	   
@@ -141,8 +236,8 @@ $(document).ready(function(){
       
       // Change header
       // Login -> Register
-      var $h2 = $('.box h2'),
-          headerText = $h2.text() === "Login" 
+      var $h2 = $('.boxh2')
+        var  headerText = $h2.text() === "Login" 
           ? "Register" 
           : "Login";
       $h2.text(headerText);
@@ -154,42 +249,97 @@ $(document).ready(function(){
       // Change signup link
       // Signup -> Login link
       var $su = $('.register');
-      $su.toggleAttr('href','register.htm','login.htm')
+      $su.toggleAttr('href','register','login')
         var signupLinkText = $su.text() === "Register!" 
-            ? "Login!" 
-            : "Register!";
+          ? "Login!" 
+          : "Register!";
       $su.text(signupLinkText);
       
       // Hide Forgot password link
       $('.forgot-password').toggle();
       
-      // Change form action
-      // login.php -> register.php
-      $('form').toggleAttr('action','login.php','register.php')
-        return false;
+      return false;
     }
   );
+  
+  $('#form').on('submit', async function(event) {
+    // Prevent the default form submission action (page refresh)
+    event.preventDefault();
 
-  $('#submit').click(
-    function() {
-      var $h2 = $('.box h2')
-      if($h2.text() === "Register") {
-        // Register func
-        // let usrName = $()
-        console.log("User: ${}")
+    const submitButton = document.activeElement; // Current focused element
+    if (submitButton.value === 'Register') {
+      const username = form.username.value; 
+      const password = form.password.value
+      const firstname = form.first_name.value
+      const lastname = form.last_name.value
+      const email = form.email.value
+      const confirm_email = form.confirm_email.value
+      const role = form.role.value
+      
+      if(email !== confirm_email) { alert("Emails dont match!"); return; }
+
+      console.log('Register username: ', username, 
+                  'password: ', password, 
+                  'firstname: ', firstname, 
+                  'lastname: ', lastname, 
+                  'email: ', email, 
+                  'confirm_email: ', confirm_email, 
+                  'role: ', role);
+
+      let response = await fetch('/register', {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(
+          { getUsername: username,
+            getEmail: email,
+            getFirstName: firstname,
+            getLastName: lastname,
+            getPassword: password,
+            getRole: role,})
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data)
+        localStorage.setItem('refresh_token', data.token.refresh_token);
+        localStorage.setItem('access_token', data.token.access_token);
+        localStorage.setItem('decoded', JSON.stringify(data.decoded));
+
+        // window.location.reload()
       } else {
-        $('.register-form').slideToggle({
-          easing: 'eioe',
-          duration: 250
-        }).find('input').toggleDisabled();
+        console.log('Register failed.')
+        console.log(response)
+      }
+    } else {
+      const username = form.username.value
+      const password = form.password.value
+
+      let response = await fetch('/login', {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(
+          { getUsername: username, 
+            getPassword: password})
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data)
+        localStorage.setItem('refresh_token', data.token.refresh_token);
+        localStorage.setItem('access_token', data.token.access_token);
+        localStorage.setItem('decoded', JSON.stringify(data.decoded));
         
-        $('.login-form').slideToggle({
-          easing: 'eioe',
-          duration: 250
-        }).find('input').toggleDisabled();
+        window.location.reload()
+      } else {
+        console.log('Login failed.')
+        console.log(response)
       }
     }
-  );
+  });
 
   var popupprevid = '--';
   $('.navicon').click(
@@ -209,4 +359,23 @@ $(document).ready(function(){
       popupprevid = this.id;
     }
   );
+
+  let promptLogin = () => {
+    if(popupprevid !== 'click3'){
+      $('.popup[display="block"]').slideToggle({
+        easing: 'eioe',
+        duration: 250
+      }).toggleAttr('display','block','none');
+    }
+    
+    $('#poponclick3').slideToggle({
+      easing: 'eioe',
+      duration: 250
+    }).toggleAttr('display','block','none');
+    popupprevid = 'click3';
+
+    $('#username').focus();
+  }
+
+  if(!loggedIn) { promptLogin(); }
 });

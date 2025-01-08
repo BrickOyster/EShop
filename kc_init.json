@@ -1,0 +1,120 @@
+[
+  {
+    "id": "master",
+    "realm": "master",
+    "enabled": true,
+    "sslRequired": "NONE",
+    "users": [
+      {
+        "username": "admin",
+        "email": "admin@example.com",
+        "enabled": true,
+        "emailVerified": true,
+        "firstName": "Permanent",
+        "lastName": "Admin",
+        "credentials": [
+          {
+            "type": "password",
+            "value": "admin",
+            "temporary": false
+          }
+        ],
+        "realmRoles": ["admin"]
+      }
+    ]
+  },
+  {
+    "realm": "eshop",
+    "enabled": true,
+    "sslRequired": "NONE",
+    "displayName": "E-Shop",
+    "displayNameHtml": "<div class=\"kc-logo-text\"><span>Keycloak</span></div>",
+    "users": [
+      {
+        "username": "user1",
+        "enabled": true,
+        "email": "user1@example.com",
+        "emailVerified": true,
+        "firstName": "User",
+        "lastName": "1", 
+        "credentials": [
+          {
+            "type": "password",
+            "value": "user1",
+            "temporary": false
+          }
+        ],
+        "groups": ["seller"]
+      },
+      {
+        "username": "user2",
+        "enabled": true,
+        "email": "user2@example.com",
+        "emailVerified": true,
+        "firstName": "User",
+        "lastName": "2", 
+        "credentials": [
+          {
+            "type": "password",
+            "value": "user2",
+            "temporary": false
+          }
+        ],
+        "groups": ["seller"]
+      },
+      {
+        "username": "user3",
+        "enabled": true,
+        "email": "user3@example.com",
+        "emailVerified": true,
+        "firstName": "User",
+        "lastName": "3", 
+        "credentials": [
+          {
+            "type": "password",
+            "value": "user3",
+            "temporary": false
+          }
+        ],
+        "groups": ["customer"]
+      }
+    ],
+    "roles": {
+      "realm": [
+        {
+          "name": "seller",
+          "description": "User that sells products."
+        },
+        {
+          "name": "customer",
+          "description": "User that buys products."
+        }
+      ]
+    },
+    "groups": [
+      {
+        "name": "seller",
+        "attributes": {},
+        "realmRoles": ["seller"]
+      },
+      {
+        "name": "customer",
+        "attributes": {},
+        "realmRoles": ["customer"]
+      }
+    ],
+    "clients": [
+      {
+        "clientId": "eshop-client",
+        "enabled": "true",
+        "publicClient": true,
+        "standardFlowEnabled": true,
+        "directAccessGrantsEnabled": true,
+        "baseUrl": "/realms/eshop/protocol/openid-connect/token",
+        "rootUrl": "${authBaseUrl}",
+        "protocol": "openid-connect",
+        "description": "Client for my custom application"
+      }
+    ]
+  }
+]

@@ -478,12 +478,8 @@ body {
   #first-name {
     margin-top: 5px;
   }
-  .captcha {
+  .role {
     margin: 10px 0;
-  }
-  .captcha label {
-    position: relative;
-    left: 0;
   }
   #submit {
     float: right;
