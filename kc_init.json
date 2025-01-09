@@ -77,6 +77,22 @@
           }
         ],
         "groups": ["customer"]
+      },
+      {
+        "username": "user4",
+        "enabled": true,
+        "email": "user4@example.com",
+        "emailVerified": true,
+        "firstName": "User",
+        "lastName": "4", 
+        "credentials": [
+          {
+            "type": "password",
+            "value": "user4",
+            "temporary": false
+          }
+        ],
+        "groups": ["customer"]
       }
     ],
     "roles": {
