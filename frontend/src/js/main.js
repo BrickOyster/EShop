@@ -2,9 +2,11 @@
 const refreshToken = localStorage.getItem('refresh_token');
 const accessToken = localStorage.getItem('access_token');
 const decoded = JSON.parse(localStorage.getItem('decoded'));
+const getDomain = () => window.location.href.split('//')[1].split('/')[0];
 var userToken = ''
 var userRole = ''
 var loggedIn = false;
+
 
 if (accessToken && decoded) {
   userToken = decoded.preferred_username;
@@ -23,7 +25,7 @@ if (accessToken && decoded) {
       localStorage.removeItem('refresh_token');
       localStorage.removeItem('access_token');
       localStorage.removeItem('decoded');
-      window.location.href = "http://localhost:1337/";
+      window.location.href = getDomain();
   }
 }
 
@@ -47,7 +49,7 @@ async function refreshUser() {
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('access_token');
     localStorage.removeItem('decoded');
-    window.location.href = "http://localhost:1337/";
+    window.location.href = getDomain();
   }
 }
 
@@ -186,7 +188,7 @@ async function logoutUser() {
     localStorage.removeItem('access_token');
     localStorage.removeItem('decoded');
     console.log('Loged out.')
-    window.location.href = "http://localhost:1337/";
+    window.location.href = getDomain();
   } else {
     console.log('Logout failed.')
     console.log(response)

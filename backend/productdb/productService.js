@@ -137,7 +137,7 @@ const fetchProductsFromOrderTopic = async ()=>{
                 break loop1
               } else {
                 // console.log("YEEES")
-                productsToUpdate.push({id: orderProduct['product_id'], amount: orderProduct['amount']})
+                productsToUpdate.push({id: orderProduct['product_id'], amount: (dbProduct['quantity']-orderProduct['amount'])})
                 break loop2
               }
             }
@@ -146,6 +146,9 @@ const fetchProductsFromOrderTopic = async ()=>{
 
         if(result){
           console.log("consumer accepted\n" + productsToUpdate)
+          for (productToUpdate of productsToUpdate) {
+            await pool.query('UPDATE products SET quantity = $2 WHERE products.id = $1', [productToUpdate['id'], productToUpdate['amount']])
+          }
           sendResponce({oid: jsonMsg['id'], ostatus: 'Accepted'})
         } 
         

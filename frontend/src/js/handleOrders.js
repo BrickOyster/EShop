@@ -9,7 +9,8 @@ var globalShopOrders;
 // Shop filter
 var filter;
 // User vars from main.js
-if (userRole !== "customer") { window.location.href = "http://localhost:1337/"; }
+const getDomain = () => window.location.href.split('//')[1].split('/')[0];
+if (userRole !== "customer") { window.location.href = getDomain(); }
 
 // Updates/Filters products page
 let generateShop = () => {
