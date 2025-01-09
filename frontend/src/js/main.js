@@ -2,7 +2,7 @@
 const refreshToken = localStorage.getItem('refresh_token');
 const accessToken = localStorage.getItem('access_token');
 const decoded = JSON.parse(localStorage.getItem('decoded'));
-const getDomain = () => window.location.href.split('//')[1].split('/')[0];
+const getDomain = () => window.location.href.split('/')[0];
 var userToken = ''
 var userRole = ''
 var loggedIn = false;

@@ -9,7 +9,7 @@ var globalShopOrders;
 // Shop filter
 var filter;
 // User vars from main.js
-const getDomain = () => window.location.href.split('//')[1].split('/')[0];
+const getDomain = () => window.location.href.split('/')[0];
 if (userRole !== "customer") { window.location.href = getDomain(); }
 
 // Updates/Filters products page
