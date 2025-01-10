@@ -185,6 +185,7 @@ services:
       KC_HOSTNAME_STRICT_HTTPS: false
       KC_HTTP_ENABLED: true
       KC_HOSTNAME_STRICT: false
+      PROXY_ADDRESS_FORWARDING: true
       # Same values as the keycloak_db service
       DB_VENDOR: postgres
       DB_ADDR: keycloak_db

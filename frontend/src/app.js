@@ -34,6 +34,7 @@ async function loginUser(getUsernameLogin, getPasswordLogin){
             username: getUsernameLogin,
             password: getPasswordLogin,
             client_id: "eshop-client",
+            client_secret: "EJaNPAqewKWZFxWxLNbXD1VpoY2AGrt8",
             grant_type: "password"
         }).toString();
     
@@ -52,6 +53,7 @@ async function refreshUser(getToken){
         
         const body = new URLSearchParams({
             client_id: "eshop-client",
+            client_secret: "EJaNPAqewKWZFxWxLNbXD1VpoY2AGrt8",
             grant_type: "refresh_token",
             refresh_token: getToken
         }).toString();
@@ -71,6 +73,7 @@ async function logoutUser(getToken){
         
         const body = new URLSearchParams({
             client_id: "eshop-client",
+            client_secret: "EJaNPAqewKWZFxWxLNbXD1VpoY2AGrt8",
             refresh_token: getToken
         }).toString();
         await axios.post(kcurl+"realms/eshop/protocol/openid-connect/logout", body, { headers }); 
@@ -86,14 +89,15 @@ async function registerUser(getUsername, getEmail, getFirstName, getLastName, ge
             username: "admin",
             password: "admin",
             client_id: "admin-cli",
-            grant_type: "password"
+            grant_type: "client_credentials",
+            client_secret: "EJaNPAqewKWZFxWxLNbXD1VpoY2AGrt8"
         }).toString();
 
         //get admin access token
         const first_response = await axios.post(kcurl+"realms/master/protocol/openid-connect/token", fbody, { fheaders })
         
         const token = first_response.data.access_token
-        const refresh = first_response.data.access_token
+        const refresh = first_response.data.refresh_token
         console.log("Got admin token. "+ token + " " + refresh);
 
         const sHeaders = { 'Content-Type': 'application/x-www-form-urlencoded', 'Authorization': 'Bearer '+ token};
