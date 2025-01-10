@@ -103,10 +103,11 @@ async function registerUser(getUsername, getEmail, getFirstName, getLastName, ge
         const sHeaders = { 'Content-Type': 'application/x-www-form-urlencoded', 'Authorization': 'Bearer '+ token};
 
         const sbody = new URLSearchParams({
-            email: getEmail,
             enabled: true,
             username: getUsername,
             firstName: getFirstName,
+            email: getEmail,
+            emailVerified: true,
             lastName: getLastName,
             attributes: {
                 client_id: "eshop-client"
