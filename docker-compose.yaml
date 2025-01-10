@@ -186,6 +186,7 @@ services:
       KC_HTTP_ENABLED: true
       KC_HOSTNAME_STRICT: false
       PROXY_ADDRESS_FORWARDING: true
+      KEYCLOAK_HTTP_CORS: true
       # Same values as the keycloak_db service
       DB_VENDOR: postgres
       DB_ADDR: keycloak_db

@@ -157,7 +157,6 @@ let generateNavbar = () => {
 
                 <!-- Help -->
                 <a href="register" class="register" title="Toggle">Register!</a>
-                <a href="#forgotpassword" class="forgot-password" title="Forgot password?">Forgor?</a>
               </form>
             </div>
           </div>
@@ -258,9 +257,6 @@ $(document).ready(function(){
           ? "Login!" 
           : "Register!";
       $su.text(signupLinkText);
-      
-      // Hide Forgot password link
-      $('.forgot-password').toggle();
       
       return false;
     }
