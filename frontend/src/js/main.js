@@ -157,6 +157,7 @@ let generateNavbar = () => {
 
                 <!-- Help -->
                 <a href="register" class="register" title="Toggle">Register!</a>
+                <a href="#forgotpassword" class="forgot-password" title="Forgot password?">Forgor?  </a>
               </form>
             </div>
           </div>
@@ -208,6 +209,13 @@ $(document).ready(function(){
       if(t==d) return b+c;
       if( (t /= d/2) < 1 ) return c/2 * Math.pow( 2, 10 * (t - 1) ) + b;
       return c/2 * ( -Math.pow( 2, -10 * --t ) + 2 ) + b;
+    },
+    snap: function( ø, t, b, c, d ) {
+      const snapPoint = d * 0.99;
+      if (t === 0) return b; // Start value
+      if (t === d) return b + c; // End value
+  
+      return (t < snapPoint) ? b : b + c;
     }
   });
   
@@ -336,6 +344,10 @@ $(document).ready(function(){
         window.location.reload()
       } else {
         console.log('Login failed.')
+        if ($('.forgot-password').is(':hidden')) {
+          $('.forgot-password').toggle();
+          $('.forgot-password').slideToggle({easing: 'snap', duration: 2000});
+        }
         console.log(response)
       }
     }
@@ -360,7 +372,9 @@ $(document).ready(function(){
     }
   );
 
-  let promptLogin = () => {
+  let promptLogin = () => {  
+    $('.forgot-password').toggle();
+
     if(popupprevid !== 'click3'){
       $('.popup[display="block"]').slideToggle({
         easing: 'eioe',
